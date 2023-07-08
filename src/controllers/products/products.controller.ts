@@ -8,7 +8,9 @@ export class ProductsController {
     @Query('offset') offset = 0,
     @Query('brand') brand: string,
   ) {
-    return `products limit => ${limit} offset => ${offset} brand => ${brand}`;
+    return {
+      message: `products limit=>${limit} offset=>${offset} brand=>${brand}`,
+    };
   }
   @Get(':id')
   getProduct(@Param('id') id: string) {

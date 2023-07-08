@@ -3,8 +3,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ProductsController } from './controllers/products/products.controller';
 import { CategoriesController } from './controllers/categories/categories.controller';
-import { WebsocketController } from './controllers/websocket/websocket.controller';
-import { AppGateway } from './app/app.gateway';
+import { SensorController } from './controllers/sensor/sensor.controller';
+import { SensorService } from './controllers/sensor/sensor.service';
+import { SensorGateway } from './controllers/sensor/sensor.gateway';
 
 @Module({
   imports: [],
@@ -12,8 +13,8 @@ import { AppGateway } from './app/app.gateway';
     AppController,
     ProductsController,
     CategoriesController,
-    WebsocketController,
+    SensorController,
   ],
-  providers: [AppService, AppGateway],
+  providers: [AppService, SensorService, SensorGateway],
 })
 export class AppModule {}
