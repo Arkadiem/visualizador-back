@@ -14,7 +14,17 @@ export class SensorController {
     return this.sensorService.initProcessSensor(body.process);
   }
   @Get('latestsensordata')
-  GetLatestSensorData() {
+  getLatestSensorData() {
     return this.sensorService.getLatestSensorData();
+  }
+  @Post('fullnamePatient')
+  getPatientData(@Body() body: { fullname: string }) {
+    return this.sensorService.getPatientData(body.fullname);
+  }
+  @Get('getPatient')
+  getPatient() {
+    return {
+      type: 'permitido',
+    };
   }
 }

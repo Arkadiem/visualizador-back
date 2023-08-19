@@ -16,7 +16,7 @@ export class SensorService {
 
   constructor(private sensorGateway: SensorGateway) {
     this.initMongoDB();
-    this.socket = new WebSocket('ws://192.168.100.135:3200/');
+    this.socket = new WebSocket('ws://192.168.1.14:3200/');
     this.socket.on('open', () => {
       console.log('Connected to server');
     });
@@ -53,7 +53,7 @@ export class SensorService {
       // Almacenar el objeto en el array sensorData en lugar de solo la distancia
       this.sensorData.push(dataPoint);
 
-      // Check if the array length reaches 20
+      // Check if the array length reaches 360
       if (this.sensorData.length === 360) {
         // Create a new object with the sensor data
         const sensorObject = { data: this.sensorData, angles: this.angleData };
@@ -61,9 +61,13 @@ export class SensorService {
         // Save the object to MongoDB
         this.saveSensorData(sensorObject);
 
+        // Emit the entire sensorData array to all connected clients
         this.sensorGateway.updateClients(this.sensorData);
         // Clear the sensorData array
         this.sensorData = [];
+      } else {
+        // If the array length has not yet reached 360, emit the latest data point to all connected clients
+        this.sensorGateway.updateClients(dataPoint);
       }
     });
 
@@ -74,7 +78,9 @@ export class SensorService {
 
   async initMongoDB() {
     try {
-      this.client = await MongoClient.connect('mongodb://172.17.0.2:27017');
+      this.client = await MongoClient.connect(
+        'mongodb+srv://arkadiem:arkadiem@cluster0.ns7abie.mongodb.net/',
+      );
       this.db = this.client.db('sensordata');
     } catch (error) {
       console.error('Error connecting to MongoDB:', error);
@@ -141,7 +147,6 @@ export class SensorService {
     let latestData;
     try {
       const collection = this.db.collection(this.collectionName);
-
       // Find the latest document in the collection
       latestData = await collection
         .find()
@@ -154,6 +159,21 @@ export class SensorService {
 
     return {
       data: latestData,
+    };
+  }
+
+  async getPatientData(fullname: string) {
+    let patientData;
+    try {
+      const collection = this.db.collection(this.collectionName);
+      // Find the latest document in the collectionn
+      patientData = await collection.find({ nombre: fullname }).toArray();
+    } catch (error) {
+      console.log('Error getting sensor data:', error);
+    }
+
+    return {
+      data: patientData,
     };
   }
 }
